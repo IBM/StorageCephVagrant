@@ -54,6 +54,14 @@ Tested with
 
 You need a subscription for RHEL and Red Hat Ceph Storage.
 
+Finally you need to create a private/public key pair in the `ceph-prep` directory:
+
+```
+cd ceph-prep
+# use empty password when prompted
+ssh-keygen -t rsa -f ./id_rsa
+cd ..
+```
 
 ## Installation
 
@@ -258,9 +266,9 @@ unregistered at Red Hat.
 
 ## Contacting the Project Maintainers, Contributing
 
-**NOTE: This repository has been configured with the [DCO bot](https://github.com/probot/dco).
+**NOTE: This repository has been configured with the [DCO bot](https://github.com/probot/dco).**
 
-If you have any questions or issues you can create a new [issue here][https://github.com/IBM/rhcs5-vagrant/issues].
+If you have any questions or issues you can create a new [issue here](https://github.com/IBM/rhcs5-vagrant/issues).
 
 Pull requests are very welcome! Make sure your patches are well tested.
 Ideally create a topic branch for every separate change you make. For
