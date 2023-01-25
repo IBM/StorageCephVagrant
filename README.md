@@ -116,8 +116,8 @@ Note: When creating an RBD image, ensure that you do not have the `Exclusive Loc
 option set, otherwise there might be access issues mapping the RBD volume on the
 client.
 
-Additional commands (on the `ceph-admin` node) to configure RBD access, CephFS
-and RGW S3 and Swift access from the admin node.
+The following sections provide additional commands (on the `ceph-admin` node)
+to configure RBD access, CephFS and RGW S3 and Swift access.
 
 ### Configure Block (RBD) access
 
@@ -184,7 +184,7 @@ sudo radosgw-admin user info --uid='user1'
 
 ## Usage
 
-Now use the created resources on the client system.
+Now use the created resources on the `ceph-client` node.
 
 ### RBD volume access
 
@@ -192,7 +192,7 @@ Now use the created resources on the client system.
 vagrant ssh ceph-client
 # Add the configuration according to the admin node equivalent
 sudo vi /etc/ceph/ceph.conf
-# Add the client keyring as created on the admin node
+# Add the client keyring according to the admin node equivalent
 sudo vi /etc/ceph/ceph.client.harald.keyring
 # Create a block device
 sudo rbd --id harald ls
@@ -205,7 +205,19 @@ sudo chown vagrant:vagrant /mnt/rbd/
 echo "hello world" > /mnt/rbd/hello.txt
 ```
 
-### RGW OpenStack Swift access
+### CephFS file access
+
+```
+# Add the admin keyring as created on the admin node /etc/ceph/client.admin.keyring
+sudo vi /etc/ceph/ceph.client.admin.keyring
+sudo mkdir /mnt/cephfs
+sudo mount -t ceph ceph-server-1:6789:/ /mnt/cephfs -o name=admin,fs=fs_name
+sudo chown vagrant:vagrant /mnt/cephfs
+df -h
+echo "hello world" > /mnt/cephfs/hello.txt
+```
+
+### RGW OpenStack Swift object access
 
 ```
 sudo pip3 install python-swiftclient
@@ -217,7 +229,7 @@ base64 /dev/urandom | head -c 10000000 >dummy_file1.txt
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' upload container-1 dummy_file1.txt 
 ```
 
-### RGW S3 access
+### RGW S3 object access
 
 Here we are actually testing S3 client access to the same data that was stored
 using the Swift protocol.
