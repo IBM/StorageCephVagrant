@@ -7,6 +7,9 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
 # Number of worker nodes
 N = 3
+# Change this to true if you are a Red Hat employee or a Red Hat Storage employee transferred to IBM.
+# Setting to true might also work for others like to does my as IBMer with NFR subscriptions.
+SKIP_POOL_SUBSCRIPTION = false
 
 user = ENV['RH_SUBSCRIPTION_MANAGER_USER']
 password = ENV['RH_SUBSCRIPTION_MANAGER_PW']
@@ -58,7 +61,8 @@ Vagrant.configure("2") do |config|
       ansible.extra_vars = {
         node_ip: "172.21.12.11",
         user: user,
-        password: password
+        password: password,
+        skip_pool_subscription: SKIP_POOL_SUBSCRIPTION
       }
     end
   end
@@ -74,7 +78,8 @@ Vagrant.configure("2") do |config|
       ansible.extra_vars = {
         node_ip: "172.21.12.10",
         user: user,
-        password: password
+        password: password,
+        skip_pool_subscription: SKIP_POOL_SUBSCRIPTION
       }
     end
   end
@@ -99,7 +104,8 @@ Vagrant.configure("2") do |config|
         ansible.extra_vars = {
           node_ip: "172.21.12.#{i+11}",
           user: user,
-          password: password
+          password: password,
+          skip_pool_subscription: SKIP_POOL_SUBSCRIPTION
         }
       end
     end

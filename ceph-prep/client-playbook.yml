@@ -7,6 +7,7 @@
   become: true
   vars:
     prereqs_path: "/vagrant/ceph-prep"
+    skip_pool_subscription: false
   tasks:
     - name: Update all packages
       ansible.builtin.dnf:      
@@ -17,12 +18,13 @@
       ansible.builtin.dnf:
         autoremove: yes
 
-    - name: Subscribe to the Ceph pool.
+    - name: Subscribe to the Ceph pool
       community.general.redhat_subscription:
         state: present
         username: "{{ user }}"
         password: "{{ password }}"
         pool_ids: 2c94a29184dbbe100184f11c5dd41df8
+      when: not skip_pool_subscription
   
     - name: Disable all RHSM repositories
       community.general.rhsm_repository:
