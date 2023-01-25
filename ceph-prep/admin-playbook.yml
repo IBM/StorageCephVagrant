@@ -1,0 +1,41 @@
+#
+# Copyright 2022- IBM Inc. All rights reserved
+# SPDX-License-Identifier: MIT
+#
+---
+- import_playbook: common-playbook.yml
+- hosts: all
+  become: true
+  vars:
+    prereqs_path: "/vagrant/ceph-prep"
+  tasks:
+    - name: Enable select repositories
+      community.general.rhsm_repository:
+        name:
+          - ansible-2.9-for-rhel-8-x86_64-rpms
+        state: enabled
+
+    - name: Install cephadm-ansible
+      ansible.builtin.dnf:      
+        name: "cephadm-ansible"
+        state: latest
+
+    - name: Create inventory directory
+      ansible.builtin.file:
+        path: /usr/share/cephadm-ansible/inventory/production
+        state: directory
+
+    - name: Copy the hosts inventory to server location
+      ansible.builtin.copy:
+        src: /vagrant/ceph-prep/hosts
+        dest: /usr/share/cephadm-ansible/inventory/production/hosts
+        mode: '0644'
+        remote_src: true
+
+    - name: Copy ssh config
+      ansible.builtin.copy:
+        src: /vagrant/ceph-prep/config
+        dest: /home/vagrant/.ssh/config
+        mode: '0600'
+        remote_src: true
+      become: false

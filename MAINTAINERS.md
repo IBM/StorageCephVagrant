@@ -1,3 +1,3 @@
 # MAINTAINERS
 
-Christopher Ferris - chrisfer@us.ibm.com
+Harald Seipp - seipp@de.ibm.com

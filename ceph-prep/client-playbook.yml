@@ -1,0 +1,43 @@
+#
+# Copyright 2022- IBM Inc. All rights reserved
+# SPDX-License-Identifier: MIT
+#
+---
+- hosts: all
+  become: true
+  vars:
+    prereqs_path: "/vagrant/ceph-prep"
+  tasks:
+    - name: Update all packages
+      ansible.builtin.dnf:      
+        name: "*"
+        state: latest
+
+    - name: Autoremove unneeded packages installed as dependencies
+      ansible.builtin.dnf:
+        autoremove: yes
+
+    - name: Subscribe to the Ceph pool.
+      community.general.redhat_subscription:
+        state: present
+        username: "{{ user }}"
+        password: "{{ password }}"
+        pool_ids: 2c94a29184dbbe100184f11c5dd41df8
+  
+    - name: Disable all RHSM repositories
+      community.general.rhsm_repository:
+        name: '*'
+        state: disabled
+
+    - name: Enable select repositories
+      community.general.rhsm_repository:
+        name:
+          - rhel-8-for-x86_64-baseos-rpms
+          - rhel-8-for-x86_64-appstream-rpms
+          - rhceph-5-tools-for-rhel-8-x86_64-rpms
+        state: enabled
+
+    - name: Install ceph-common
+      ansible.builtin.dnf:      
+        name: "ceph-common"
+        state: latest

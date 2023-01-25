@@ -1,0 +1,6 @@
+ceph-server-1
+ceph-server-2
+ceph-server-3
+
+[admin]
+ceph-admin
