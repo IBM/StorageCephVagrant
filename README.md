@@ -4,8 +4,8 @@ Vagrant / Ansible RHCS5 Deployment
 ## Scope
 
 
-This is an opinionated automated deployment of a RHCS 5.x cluster installation
-based on RHEL8 up to the point where you run the preflight Ansible playbook.
+This is an opinionated automated deployment of a Red Hat Ceph Storage (RHCS) 5.x cluster
+installation based on RHEL8 up to the point where you run the preflight Ansible playbook.
 
 ![RHCS5 Screenshot](./RHCS5-Vagrant.png "RHCS5 Screenshot")
 
