@@ -26,7 +26,9 @@ Copyright notice:
 
 ## Prerequisites
 
-You need a Linux host that should be equipped with 64GB+ RAM and 8+ vCPUs.
+You need a Linux host that is ideally equipped with 64GB+ RAM and 8+ vCPUs.
+The configuration can be adjusted to make the deployment work on less capable
+hardware.
 
 Fedora Linux (IBM OpenClient for Fedora) was used to develop this automation.
 Of course the instructions below can be adopted to other Linux variants with
@@ -62,6 +64,9 @@ cd ceph-prep
 ssh-keygen -t rsa -f ./id_rsa
 cd ..
 ```
+
+There are some options that you can set in the [Vagrantfile](./Vagrantfile), look
+at the section marked with `Some parameters that can be adjusted`.
 
 ## Installation
 
