@@ -260,8 +260,10 @@ aws --profile ceph --endpoint http://172.21.12.13 s3 ls s3://container-1
 ## Shutting down and restarting the VMs
 
 Shutting down the VMs with `vagrant halt` then re-starting them at a later time
-with `vagrant reload` works with this solution. RBD mappings on the ceph-client
-VM need to be re-created after the reboot.
+with `vagrant reload` works with this solution.
+
+RBD mappings/mounts and CephFS mounts on the ceph-client VM need to be
+re-created after re-starting.
 
 ## Deleting the deployment
 
