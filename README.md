@@ -71,7 +71,7 @@ at the section marked with `Some parameters that can be adjusted`.
 ## Installation
 
 Bring up the Cluster by setting the environment variables with your Red Hat
-credentials then starting start the vagrant/ansible driven deployment:
+credentials then start the vagrant/ansible driven deployment:
 ```
 export RH_SUBSCRIPTION_MANAGER_USER=<your Red Hat username>
 export RH_SUBSCRIPTION_MANAGER_PW=<your Red Hat password>
