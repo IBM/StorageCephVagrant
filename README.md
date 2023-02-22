@@ -167,8 +167,9 @@ sudo ceph orch ps
 sudo ceph -s
 sudo ceph df
 sudo ceph fs status fs_name
-# Use admin keyring for CephFS mount
-sudo cat /etc/ceph/ceph.client.admin.keyring 
+# Authorize client file system access and grant quota and snapshot rights
+sudo ceph fs authorize fs_name client.0 / rwps
+sudo ceph auth get client.0 -o /etc/ceph/ceph.client.0.keyring
 ```
 
 ### Configure Object (RGW) access
@@ -221,10 +222,10 @@ echo "hello world" > /mnt/rbd/hello.txt
 ### CephFS file access
 
 ```
-# Add the admin keyring as created on the admin node /etc/ceph/client.admin.keyring
-sudo vi /etc/ceph/ceph.client.admin.keyring
+# Add the 0 keyring file according to the admin node equivalent
+sudo vi /etc/ceph/ceph.client.0.keyring
 sudo mkdir /mnt/cephfs
-sudo mount -t ceph ceph-server-1:6789:/ /mnt/cephfs -o name=admin,fs=fs_name
+sudo mount -t ceph ceph-server-1:6789:/ /mnt/cephfs -o name=0,fs=fs_name
 sudo chown vagrant:vagrant /mnt/cephfs
 df -h
 echo "hello world" > /mnt/cephfs/hello.txt
@@ -256,6 +257,20 @@ aws configure --profile ceph
 aws --profile ceph --endpoint http://ceph-server-2 s3 ls
 aws --profile ceph --endpoint http://172.21.12.13 s3 ls s3://container-1
 ```
+
+### Grafana Performance Dashboards
+
+By default, the Grafana dashboards that as part of the Web UI "Overall Performance"
+tabs will not show up.
+To fix this, you need to
+
+1. Add ceph-admin to `/etc/hosts` on your host: `172.21.12.10 ceph-admin`
+2. Open a browser tab and point it to [https://ceph-admin:3000](https://ceph-admin:3000), then accept the self-signed certificate
+
+Afterwards the Grafana dashboards should show up in the respective
+"Overall Performance" tabs for Hosts, OSDs, Pools, Images, File Systems, and
+Object Gateway Daemons.
+
 
 ## Shutting down and restarting the VMs
 
