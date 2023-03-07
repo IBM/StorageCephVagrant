@@ -271,6 +271,40 @@ Afterwards the Grafana dashboards should show up in the respective
 "Overall Performance" tabs for Hosts, OSDs, Pools, Images, File Systems, and
 Object Gateway Daemons.
 
+### Reducing to 3 mons
+
+After adding all nodes, a count of 5 mons is set while only four nodes are
+available, thus only four mons will be running:
+
+```
+$ sudo ceph orch ls
+NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
+...
+mon                                 4/5  2m ago     5w   count:5
+```
+
+To get a better balanced state, reduce the number of mons to 3:
+
+```
+cat <<EOF>3-mons.yaml
+service_type: mon
+service_name: mon
+placement:
+  count: 3
+EOF
+sudo ceph orch apply -i 3-mons.yaml
+```
+
+This will result in:
+
+```
+$ sudo ceph orch ls
+NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
+...
+mon                                 3/3  65s ago    6s   count:3
+...
+```
+
 
 ## Shutting down and restarting the VMs
 
