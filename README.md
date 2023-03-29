@@ -1,13 +1,13 @@
-Vagrant / Ansible RHCS5 Deployment
-==================================
+Vagrant / Ansible IBM Storage Ceph Deployment
+=============================================
 
 ## Scope
 
 
-This is an opinionated automated deployment of a Red Hat Ceph Storage (RHCS) 5.x cluster
+This is an opinionated automated deployment of a IBM Storage Ceph 5.x cluster
 installation based on RHEL8 up to the point where you run the preflight Ansible playbook.
 
-![RHCS5 Screenshot](./RHCS5-Vagrant.png "RHCS5 Screenshot")
+![IBM Storage Ceph Screenshot](./IBM_Storage_Ceph.png "IBM Storage Ceph Screenshot")
 
 
 ## Acknowledgments
@@ -54,7 +54,7 @@ Tested with
 - Fedora 36: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 5.9.0
 - Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 7.1.0
 
-You need a subscription for RHEL and Red Hat Ceph Storage.
+You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
 Finally you need to create a private/public key pair in the `ceph-prep` directory:
 
@@ -87,21 +87,21 @@ preflight Ansible playbook:
 ```
 vagrant ssh ceph-admin
 cd /usr/share/cephadm-ansible/
-ansible-playbook -i inventory/production/hosts cephadm-preflight.yml --extra-vars "ceph_origin=rhcs"
+ansible-playbook -i inventory/production/hosts cephadm-preflight.yml --extra-vars "ceph_origin=ibm"
 ```
 
 For the next step you need to set the environment variables again on the
 ceph-admin node:
 
 ```
-export RH_SUBSCRIPTION_MANAGER_USER=<your Red Hat username>
-export RH_SUBSCRIPTION_MANAGER_PW=<your Red Hat password>
+export IBM_CR_USERNAME=<your IBM Container Registry user name>
+export IBM_CR_PASSWORD=<your IBM Container Registry Entitlement key>
 ```
 
 Then you can continue with bootstrapping the cluster:
 
 ```
-sudo cephadm bootstrap --cluster-network 172.21.12.0/24 --mon-ip 172.21.12.10 --registry-url registry.redhat.io --registry-username $RH_SUBSCRIPTION_MANAGER_USER  --registry-password $RH_SUBSCRIPTION_MANAGER_PW --yes-i-know
+sudo cephadm bootstrap --cluster-network 172.21.12.0/24 --mon-ip 172.21.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD --yes-i-know
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-1
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-2
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-3
@@ -114,11 +114,12 @@ will need it for logging into the console the first time.
 ## Configuration
 
 You can now complete the installation by logging into the
-[RHCS GUI](https://172.21.12.10:8443) to
+[IBM Storage Ceph GUI](https://172.21.12.10:8443) to
 
 - change the password
 - activate telemetry module
-- add nodes (ceph-server-1, ceph-server-2, ceph-server-3)
+- add nodes (ceph-server-1 with IP 172.21.12.12, ceph-server-2 with
+IP 172.21.12.13, ceph-server-3 with IP 172.21.12.14)
 - add OSDs (wait until all ceph-server nodes are active before starting that,
 might take up to 10 minutes)
 
@@ -161,7 +162,7 @@ service_id: fs_name
 placement:
   count: 2
 EOF
-sudo ceph orch apply -i mds.yaml 
+sudo ceph orch apply -i mds.yaml
 sudo ceph orch ls
 sudo ceph orch ps
 sudo ceph -s
