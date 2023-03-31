@@ -116,14 +116,19 @@ will need it for logging into the console the first time.
 You can now complete the installation by logging into the
 [RHCS GUI](https://172.21.12.10:8443) to
 
-- change the password
-- activate telemetry module
-- add nodes (ceph-server-1, ceph-server-2, ceph-server-3)
-- add OSDs (wait until all ceph-server nodes are active before starting that,
-might take up to 10 minutes)
+- change the password. You will be prompted automatically, the initial password
+is the one you noted above as `cephadm bootstrap` output.
+- activate telemetry module. See the warning on top of the screen after logging
+in.
+- add nodes using Cluster->Hosts->Create. Use ceph-server-1 with IP
+172.21.12.12, ceph-server-2 with IP 172.21.12.13, ceph-server-3
+with IP 172.21.12.14.
+- add OSDs. Please wait until all ceph-server nodes are active, this might take
+up to 10 minutes. When active, Cluster->Hosts shows mon service instances on
+all nodes. Add OSDs via Cluster->OSDs->Create.
 
-
-Most of the following is taken from the course [Hands-on with Red Hat Ceph Storage 5](https://training-lms.redhat.com/sso/saml/auth/rhopen?RelayState=deeplinkoffering%3D44428318).
+Most of the following is taken from the course [Hands-on with Red Hat Ceph Storage 5](https://training-lms.redhat.com/sso/saml/auth/rhopen?RelayState=deeplinkoffering%3D44428318)
+with some improvements applied.
 
 Note: When creating an RBD image, ensure that you do not have the `Exclusive Lock`
 option set, otherwise there might be access issues mapping the RBD volume on the
@@ -277,6 +282,7 @@ After adding all nodes, a count of 5 mons is set while only four nodes are
 available, thus only four mons will be running:
 
 ```
+vagrant ssh ceph-admin
 $ sudo ceph orch ls
 NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
 ...
