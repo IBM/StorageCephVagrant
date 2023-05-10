@@ -65,6 +65,11 @@ Vagrant.configure("2") do |config|
     libvirt.cpus = 2
     libvirt.disk_bus = "virtio"
     libvirt.storage_pool_name = STORAGE_POOL
+    # To avoid USB device resource conflicts
+    libvirt.graphics_type = "spice"
+    (1..2).each do
+      libvirt.redirdev :type => "spicevmc"
+    end
   end
   config.ssh.forward_agent = true
   config.ssh.insert_key = false
