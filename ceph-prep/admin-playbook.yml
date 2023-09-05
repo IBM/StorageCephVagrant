@@ -10,11 +10,11 @@
     prereqs_path: "/vagrant/ceph-prep"
     skip_pool_subscription: false
   tasks:
-    - name: Enable select repositories
-      community.general.rhsm_repository:
-        name:
-          - ansible-2.9-for-rhel-8-x86_64-rpms
-        state: enabled
+#    - name: Enable select repositories
+#      community.general.rhsm_repository:
+#        name:
+#          - ansible-2.9-for-rhel-8-x86_64-rpms
+#        state: enabled
 
     - name: Install cephadm-ansible
       ansible.builtin.dnf:      

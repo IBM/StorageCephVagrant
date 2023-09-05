@@ -22,7 +22,7 @@ RAM_SIZE = 8192
 # IP prefix and start address for the VMs
 # The ceph-admin node will get IP_PREFIX.IPSTART (default: 172.21.12.10)
 # The ceph-client and ceph-server-x nodes will get subsequent addresses.
-IP_PREFIX = "172.21.12."
+IP_PREFIX = "172.23.12."
 IP_START = 10
 
 ### Do not modify the code below unless you are developing
@@ -56,7 +56,7 @@ timedatectl set-timezone Europe/Berlin
 }
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "roboxes/rhel8"
+  config.vm.box = "roboxes/rhel9"
 
   config.vm.provider :libvirt do |libvirt|
     # Do not use (user) session libvirt - VM networks will not work there on Fedora!

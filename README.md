@@ -4,8 +4,8 @@ Vagrant / Ansible IBM Storage Ceph Deployment
 ## Scope
 
 
-This is an opinionated automated deployment of a IBM Storage Ceph 5.x cluster
-installation based on RHEL8 up to the point where you run the preflight Ansible playbook.
+This is an opinionated automated deployment of a IBM Storage Ceph 6.x cluster
+installation based on RHEL9 up to the point where you run the preflight Ansible playbook.
 
 ![IBM Storage Ceph Screenshot](./IBM_Storage_Ceph.png "IBM Storage Ceph Screenshot")
 
@@ -53,6 +53,7 @@ Tested with
 
 - Fedora 36: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 5.9.0
 - Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 7.1.0
+- Fedora 38: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 7.7.0
 
 You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
@@ -101,7 +102,7 @@ export IBM_CR_PASSWORD=<your IBM Container Registry Entitlement key>
 Then you can continue with bootstrapping the cluster:
 
 ```
-sudo cephadm bootstrap --cluster-network 172.21.12.0/24 --mon-ip 172.21.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD --yes-i-know
+sudo cephadm bootstrap --cluster-network 172.23.12.0/24 --mon-ip 172.23.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD --yes-i-know
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-1
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-2
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-3
@@ -114,15 +115,15 @@ will need it for logging into the console the first time.
 ## Configuration
 
 You can now complete the installation by logging into the
-[IBM Storage Ceph GUI](https://172.21.12.10:8443) to
+[IBM Storage Ceph GUI](https://172.23.12.10:8443) to
 
 - change the password. You will be prompted automatically, the initial password
 is the one you noted above as `cephadm bootstrap` output.
 - activate telemetry module. See the warning on top of the screen after logging
 in.
-- add nodes using Cluster->Hosts->Create. Use ceph-server-1 with IP
-172.21.12.12, ceph-server-2 with IP 172.21.12.13, ceph-server-3
-with IP 172.21.12.14.
+- add nodes using Cluster->Hosts->Add. Use ceph-server-1 with IP
+172.23.12.12, ceph-server-2 with IP 172.23.12.13, ceph-server-3
+with IP 172.23.12.14.
 - add OSDs. Please wait until all ceph-server nodes are active, this might take
 up to 10 minutes. When active, Cluster->Hosts shows mon service instances on
 all nodes. Add OSDs via Cluster->OSDs->Create.
@@ -240,7 +241,8 @@ echo "hello world" > /mnt/cephfs/hello.txt
 ### RGW OpenStack Swift object access
 
 ```
-sudo pip3 install python-swiftclient
+sudo dnf -y install python3-pip
+pip3 --user install python-swiftclient
 sudo rados --id harald lspools
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' post container-1
@@ -257,11 +259,11 @@ When asked for the access key, put in `S3user1`, for the secret key use
 `S3user1key`.
 
 ```
-sudo pip3 install awscli
+pip3 install --user awscli
 echo "Put in S3user1 as access key and S3user1key as secret key"
 aws configure --profile ceph
 aws --profile ceph --endpoint http://ceph-server-2 s3 ls
-aws --profile ceph --endpoint http://172.21.12.13 s3 ls s3://container-1
+aws --profile ceph --endpoint http://172.23.12.13 s3 ls s3://container-1
 ```
 
 ### Grafana Performance Dashboards
@@ -270,7 +272,7 @@ By default, the Grafana dashboards that as part of the Web UI "Overall Performan
 tabs will not show up.
 To fix this, you need to
 
-1. Add ceph-admin to `/etc/hosts` on your host: `172.21.12.10 ceph-admin`
+1. Add ceph-admin to `/etc/hosts` on your host: `172.23.12.10 ceph-admin`
 2. Open a browser tab and point it to [https://ceph-admin:3000](https://ceph-admin:3000), then accept the self-signed certificate
 
 Afterwards the Grafana dashboards should show up in the respective

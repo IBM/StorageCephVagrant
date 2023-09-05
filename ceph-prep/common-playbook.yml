@@ -20,8 +20,8 @@
 
     - name: Download ceph-tools repository
       ansible.builtin.uri:
-        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-5-rhel-8.repo
-        dest: /etc/yum.repos.d/ibm-storage-ceph-5-rhel-8.repo
+        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-6-rhel-9.repo
+        dest: /etc/yum.repos.d/ibm-storage-ceph-6-rhel-9.repo
 
     - name: Disable all RHSM repositories
       community.general.rhsm_repository:
@@ -31,8 +31,8 @@
     - name: Enable select repositories
       community.general.rhsm_repository:
         name:
-          - rhel-8-for-x86_64-baseos-rpms
-          - rhel-8-for-x86_64-appstream-rpms
+          - rhel-9-for-x86_64-baseos-rpms
+          - rhel-9-for-x86_64-appstream-rpms
         state: enabled
 
     - name: Install license package (most likely already installed)
@@ -72,5 +72,3 @@
 
     - name: Key exchange, part 5
       ansible.builtin.shell: cat /home/vagrant/.ssh/authorized_keys >> /root/.ssh/authorized_keys
-
-      
