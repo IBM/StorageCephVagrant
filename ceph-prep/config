@@ -1,11 +1,11 @@
-Host ceph-server-1
-  Hostname ceph-server-1
+Host ceph7-server-1
+  Hostname ceph7-server-1
   User vagrant
 
-Host ceph-server-2
-  Hostname ceph-server-2
+Host ceph7-server-2
+  Hostname ceph7-server-2
   User vagrant
 
-Host ceph-server-2
-  Hostname ceph-server-2
+Host ceph7-server-2
+  Hostname ceph7-server-2
   User vagrant

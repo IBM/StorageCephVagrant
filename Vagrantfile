@@ -3,15 +3,9 @@
 
 ### Some parameters that can be adjusted
 
-# Number of ceph-server nodes. If you change the default number of 3 you
+# Number of ceph7-server nodes. If you change the default number of 3 you
 # need to adjust the ceph-prep/config and ceph-prep/hosts files accordingly.
 N = 3
-
-# Change this to true if you are a Red Hat employee or a Red Hat Storage
-# employee transferred to IBM.
-# Setting to true might also work for others like it does for me as IBMer with
-# NFR subscriptions.
-SKIP_POOL_SUBSCRIPTION = false
 
 # The libvirt storage pool to use
 STORAGE_POOL = "default"
@@ -20,8 +14,8 @@ STORAGE_POOL = "default"
 RAM_SIZE = 8192
 
 # IP prefix and start address for the VMs
-# The ceph-admin node will get IP_PREFIX.IPSTART (default: 172.21.12.10)
-# The ceph-client and ceph-server-x nodes will get subsequent addresses.
+# The ceph7-admin node will get IP_PREFIX.IPSTART (default: 172.21.12.10)
+# The ceph7-client and ceph7-server-x nodes will get subsequent addresses.
 IP_PREFIX = "172.23.12."
 IP_START = 10
 
@@ -77,8 +71,8 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder './', '/vagrant', type: 'rsync'
 
   # The Ceph client will be our client machine to mount volumes and interact with the cluster
-  config.vm.define "ceph-client" do |client|
-    client.vm.hostname = "ceph-client"
+  config.vm.define "ceph7-client" do |client|
+    client.vm.hostname = "ceph7-client"
     client.vm.network "private_network", ip: IP_PREFIX+"#{IP_START + 1}"
     client.vm.provision "shell", inline: register_script
     client.vm.provision "shell", inline: timezone_script
@@ -88,14 +82,13 @@ Vagrant.configure("2") do |config|
         node_ip: IP_PREFIX+"#{IP_START + 1}",
         user: user,
         password: password,
-        skip_pool_subscription: SKIP_POOL_SUBSCRIPTION
       }
     end
   end
  
   # We need one Ceph admin machine to manage the cluster
-  config.vm.define "ceph-admin" do |admin|
-    admin.vm.hostname = "ceph-admin"
+  config.vm.define "ceph7-admin" do |admin|
+    admin.vm.hostname = "ceph7-admin"
     admin.vm.network "private_network", ip: IP_PREFIX+"#{IP_START}"
     admin.vm.provision "shell", inline: register_script
     admin.vm.provision "shell", inline: timezone_script
@@ -105,15 +98,14 @@ Vagrant.configure("2") do |config|
         node_ip: IP_PREFIX+"#{IP_START}",
         user: user,
         password: password,
-        skip_pool_subscription: SKIP_POOL_SUBSCRIPTION
       }
     end
   end
  
   # We provision three nodes to be Ceph servers
   (1..N).each do |i|
-    config.vm.define "ceph-server-#{i}" do |server|
-      server.vm.hostname = "ceph-server-#{i}"
+    config.vm.define "ceph7-server-#{i}" do |server|
+      server.vm.hostname = "ceph7-server-#{i}"
       server.vm.network "private_network", ip: IP_PREFIX+"#{IP_START+i+1}"
       # Attach disks for Ceph OSDs
       server.vm.provider "libvirt" do |libvirt|
@@ -131,7 +123,6 @@ Vagrant.configure("2") do |config|
           node_ip: IP_PREFIX+"#{IP_START+i+1}",
           user: user,
           password: password,
-          skip_pool_subscription: SKIP_POOL_SUBSCRIPTION
         }
       end
     end

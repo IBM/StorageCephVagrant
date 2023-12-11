@@ -4,7 +4,7 @@ Vagrant / Ansible IBM Storage Ceph Deployment
 ## Scope
 
 
-This is an opinionated automated deployment of a IBM Storage Ceph 6.x cluster
+This is an opinionated automated deployment of a IBM Storage Ceph 7.x cluster
 installation based on RHEL9 up to the point where you run the preflight Ansible playbook.
 
 ![IBM Storage Ceph Screenshot](./IBM_Storage_Ceph.png "IBM Storage Ceph Screenshot")
@@ -51,10 +51,10 @@ container images.
 
 Tested with
 
-- Fedora 36: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 5.9.0
-- Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 7.1.0
-- Fedora 38: Vagrant 2.2.19, vagrant-libvirt 0.7.0 and Ansible 7.7.0
-
+- Fedora 36: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 5.9.0
+- Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.1.0
+- Fedora 38: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.7.0
+- Fedora 39: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.0.0
 You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
 Finally you need to create a private/public key pair in the `ceph-prep` directory:
@@ -102,7 +102,7 @@ export IBM_CR_PASSWORD=<your IBM Container Registry Entitlement key>
 Then you can continue with bootstrapping the cluster:
 
 ```
-sudo cephadm bootstrap --cluster-network 172.23.12.0/24 --mon-ip 172.23.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD --yes-i-know
+sudo cephadm bootstrap --cluster-network 172.23.12.0/24 --mon-ip 172.23.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-1
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-2
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-3
@@ -242,7 +242,7 @@ echo "hello world" > /mnt/cephfs/hello.txt
 
 ```
 sudo dnf -y install python3-pip
-pip3 --user install python-swiftclient
+pip3 install --user python-swiftclient
 sudo rados --id harald lspools
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' post container-1
