@@ -1,6 +1,6 @@
-ceph7-server-1
-ceph7-server-2
-ceph7-server-3
+ceph-server-1
+ceph-server-2
+ceph-server-3
 
 [admin]
-ceph7-admin
+ceph-admin
