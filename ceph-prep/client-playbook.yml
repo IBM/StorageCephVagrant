@@ -7,7 +7,6 @@
   become: true
   vars:
     prereqs_path: "/vagrant/ceph-prep"
-    skip_pool_subscription: false
   tasks:
     - name: Update all packages
       ansible.builtin.dnf:      
@@ -18,25 +17,21 @@
       ansible.builtin.dnf:
         autoremove: yes
 
-    - name: Subscribe to the Ceph pool
-      community.general.redhat_subscription:
-        state: present
-        username: "{{ user }}"
-        password: "{{ password }}"
-        pool_ids: 2c94a29184dbbe100184f11c5dd41df8
-      when: not skip_pool_subscription
-  
     - name: Disable all RHSM repositories
       community.general.rhsm_repository:
         name: '*'
         state: disabled
 
+    - name: Download ceph-tools repository
+      ansible.builtin.uri:
+        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-7-rhel-9.repo
+        dest: /etc/yum.repos.d/ibm-storage-ceph-7-rhel-9.repo
+
     - name: Enable select repositories
       community.general.rhsm_repository:
         name:
-          - rhel-8-for-x86_64-baseos-rpms
-          - rhel-8-for-x86_64-appstream-rpms
-          - rhceph-5-tools-for-rhel-8-x86_64-rpms
+          - rhel-9-for-x86_64-baseos-rpms
+          - rhel-9-for-x86_64-appstream-rpms
         state: enabled
 
     - name: Install ceph-common
