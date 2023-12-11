@@ -48,13 +48,13 @@ with `vagrant plugin install vagrant-hostmanager`.
 The host needs internet connectivity to download the required packages and
 container images.
 
-
 Tested with
 
 - Fedora 36: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 5.9.0
 - Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.1.0
 - Fedora 38: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.7.0
 - Fedora 39: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.0.0
+
 You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
 Finally you need to create a private/public key pair in the `ceph-prep` directory:
@@ -82,17 +82,17 @@ vagrant up --no-parallel
 
 The vagrant deployment will automatically subscribe the machines at Red Hat.
 
-To finalize the installation, ssh into the `ceph-admin` node and execute the
+To finalize the installation, ssh into the `ceph7-admin` node and execute the
 preflight Ansible playbook:
 
 ```
-vagrant ssh ceph-admin
+vagrant ssh ceph7-admin
 cd /usr/share/cephadm-ansible/
 ansible-playbook -i inventory/production/hosts cephadm-preflight.yml --extra-vars "ceph_origin=ibm"
 ```
 
 For the next step you need to set the environment variables again on the
-ceph-admin node:
+ceph7-admin node:
 
 ```
 export IBM_CR_USERNAME=<your IBM Container Registry user name>
@@ -103,9 +103,9 @@ Then you can continue with bootstrapping the cluster:
 
 ```
 sudo cephadm bootstrap --cluster-network 172.23.12.0/24 --mon-ip 172.23.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD
-ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-1
-ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-2
-ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-3
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph7-server-1
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph7-server-2
+ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph7-server-3
 ```
 
 Note down the admin password that the `cephadm bootstrap` command printed. You
@@ -121,10 +121,10 @@ You can now complete the installation by logging into the
 is the one you noted above as `cephadm bootstrap` output.
 - activate telemetry module. See the warning on top of the screen after logging
 in.
-- add nodes using Cluster->Hosts->Add. Use ceph-server-1 with IP
-172.23.12.12, ceph-server-2 with IP 172.23.12.13, ceph-server-3
+- add nodes using Cluster->Hosts->Add. Use ceph7-server-1 with IP
+172.23.12.12, ceph7-server-2 with IP 172.23.12.13, ceph7-server-3
 with IP 172.23.12.14.
-- add OSDs. Please wait until all ceph-server nodes are active, this might take
+- add OSDs. Please wait until all ceph7-server nodes are active, this might take
 up to 10 minutes. When active, Cluster->Hosts shows mon service instances on
 all nodes. Add OSDs via Cluster->OSDs->Create.
 
@@ -136,13 +136,13 @@ Note: When creating an RBD image, ensure that you do not have the `Exclusive Loc
 option set, otherwise there might be access issues mapping the RBD volume on the
 client.
 
-The following sections provide additional commands (on the `ceph-admin` node)
+The following sections provide additional commands (on the `ceph7-admin` node)
 to configure RBD access, CephFS and RGW S3 and Swift access.
 
 ### Configure Block (RBD) access
 
 ```
-vagrant ssh ceph-admin
+vagrant ssh ceph7-admin
 # Create RBD pool
 sudo ceph osd pool create rbd 64
 sudo ceph osd pool application enable rbd rbd
@@ -159,7 +159,7 @@ sudo rbd ls
 
 ```
 # Create CephFS
-sudo ceph fs volume create fs_name --placement=ceph-server-1,ceph-server-2
+sudo ceph fs volume create fs_name --placement=ceph7-server-1,ceph7-server-2
 sudo ceph fs volume ls
 cd
 cat <<EOF >mds.yaml 
@@ -193,7 +193,7 @@ sudo radosgw-admin realm create --rgw-realm=test_realm --default
 sudo radosgw-admin zonegroup create --rgw-zonegroup=default --master --default
 sudo radosgw-admin zone create --rgw-zonegroup=default --rgw-zone=test_zone --master --default
 sudo radosgw-admin period update --rgw-realm=test_realm --commit
-sudo ceph orch apply rgw test --realm=test_realm --zone=test_zone --placement="2 ceph-server-2 ceph-server-3"
+sudo ceph orch apply rgw test --realm=test_realm --zone=test_zone --placement="2 ceph7-server-2 ceph7-server-3"
 sudo ceph orch ls
 sudo ceph orch ps
 sudo ceph -s
@@ -205,12 +205,12 @@ sudo radosgw-admin user info --uid='user1'
 
 ## Usage
 
-Now use the created resources on the `ceph-client` node.
+Now use the created resources on the `ceph7-client` node.
 
 ### RBD volume access
 
 ```
-vagrant ssh ceph-client
+vagrant ssh ceph7-client
 # Add the configuration according to the admin node equivalent
 sudo vi /etc/ceph/ceph.conf
 # Add the client keyring according to the admin node equivalent
@@ -232,7 +232,7 @@ echo "hello world" > /mnt/rbd/hello.txt
 # Add the 0 keyring file according to the admin node equivalent
 sudo vi /etc/ceph/ceph.client.0.keyring
 sudo mkdir /mnt/cephfs
-sudo mount -t ceph ceph-server-1:6789:/ /mnt/cephfs -o name=0,fs=fs_name
+sudo mount -t ceph ceph7-server-1:6789:/ /mnt/cephfs -o name=0,fs=fs_name
 sudo chown vagrant:vagrant /mnt/cephfs
 df -h
 echo "hello world" > /mnt/cephfs/hello.txt
@@ -244,11 +244,11 @@ echo "hello world" > /mnt/cephfs/hello.txt
 sudo dnf -y install python3-pip
 pip3 install --user python-swiftclient
 sudo rados --id harald lspools
-swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
-swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' post container-1
-swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
+swift -A http://ceph7-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
+swift -A http://ceph7-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' post container-1
+swift -A http://ceph7-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
 base64 /dev/urandom | head -c 10000000 >dummy_file1.txt
-swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' upload container-1 dummy_file1.txt 
+swift -A http://ceph7-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' upload container-1 dummy_file1.txt 
 ```
 
 ### RGW S3 object access
@@ -262,7 +262,7 @@ When asked for the access key, put in `S3user1`, for the secret key use
 pip3 install --user awscli
 echo "Put in S3user1 as access key and S3user1key as secret key"
 aws configure --profile ceph
-aws --profile ceph --endpoint http://ceph-server-2 s3 ls
+aws --profile ceph --endpoint http://ceph7-server-2 s3 ls
 aws --profile ceph --endpoint http://172.23.12.13 s3 ls s3://container-1
 ```
 
@@ -272,8 +272,8 @@ By default, the Grafana dashboards that as part of the Web UI "Overall Performan
 tabs will not show up.
 To fix this, you need to
 
-1. Add ceph-admin to `/etc/hosts` on your host: `172.23.12.10 ceph-admin`
-2. Open a browser tab and point it to [https://ceph-admin:3000](https://ceph-admin:3000), then accept the self-signed certificate
+1. Add ceph7-admin to `/etc/hosts` on your host: `172.23.12.10 ceph7-admin`
+2. Open a browser tab and point it to [https://ceph7-admin:3000](https://ceph7-admin:3000), then accept the self-signed certificate
 
 Afterwards the Grafana dashboards should show up in the respective
 "Overall Performance" tabs for Hosts, OSDs, Pools, Images, File Systems, and
@@ -285,7 +285,7 @@ After adding all nodes, a count of 5 mons is set while only four nodes are
 available, thus only four mons will be running:
 
 ```
-vagrant ssh ceph-admin
+vagrant ssh ceph7-admin
 $ sudo ceph orch ls
 NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
 ...
@@ -320,7 +320,7 @@ mon                                 3/3  65s ago    6s   count:3
 Shutting down the VMs with `vagrant halt` then re-starting them at a later time
 with `vagrant reload` works with this solution.
 
-RBD mappings/mounts and CephFS mounts on the ceph-client VM need to be
+RBD mappings/mounts and CephFS mounts on the ceph7-client VM need to be
 re-created after re-starting.
 
 ## Deleting the deployment
