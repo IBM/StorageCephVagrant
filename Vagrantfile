@@ -16,7 +16,7 @@ RAM_SIZE = 8192
 # IP prefix and start address for the VMs
 # The ceph-admin node will get IP_PREFIX.IPSTART (default: 172.21.12.10)
 # The ceph-client and ceph-server-x nodes will get subsequent addresses.
-IP_PREFIX = "172.23.12."
+IP_PREFIX = "172.21.12."
 IP_START = 10
 
 ### Do not modify the code below unless you are developing
