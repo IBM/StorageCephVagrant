@@ -45,6 +45,12 @@
         state: touch
 
     - name: Key exchange, part 1
+      ansible.builtin.file:
+        path: /root/.ssh
+        state: directory
+        mode: '0700'
+
+    - name: Key exchange, part 2
       ansible.builtin.copy:
         src: /vagrant/ceph-prep/id_rsa
         dest: /home/vagrant/.ssh/id_rsa
@@ -52,22 +58,29 @@
         remote_src: true
       become: false
 
-    - name: Key exchange, part 2
+    - name: Key exchange, part 3
+      ansible.builtin.copy:
+        src: /vagrant/ceph-prep/id_rsa
+        dest: /root/.ssh/id_rsa
+        mode: '0600'
+        remote_src: true
+
+    - name: Key exchange, part 4
       ansible.builtin.copy:
         src: /vagrant/ceph-prep/id_rsa.pub
         dest: /home/vagrant/.ssh/id_rsa.pub
         remote_src: true
       become: false
 
-    - name: Key exchange, part 3
+    - name: Key exchange, part 5
+      ansible.builtin.copy:
+        src: /vagrant/ceph-prep/id_rsa.pub
+        dest: /root/.ssh/id_rsa.pub
+        remote_src: true
+
+    - name: Key exchange, part 6
       ansible.builtin.shell: cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
       become: false
 
-    - name: Key exchange, part 4
-      ansible.builtin.file:
-        path: /root/.ssh
-        state: directory
-        mode: '0700'
-
-    - name: Key exchange, part 5
+    - name: Key exchange, part 7
       ansible.builtin.shell: cat /home/vagrant/.ssh/authorized_keys >> /root/.ssh/authorized_keys

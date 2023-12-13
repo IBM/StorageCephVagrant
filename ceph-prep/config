@@ -1,11 +1,27 @@
-Host ceph-server-1
-  Hostname ceph-server-1
+Host ceph-s-1
+  Hostname ceph-s-1
   User vagrant
 
-Host ceph-server-2
-  Hostname ceph-server-2
+Host ceph-s-2
+  Hostname ceph-s-2
   User vagrant
 
-Host ceph-server-2
-  Hostname ceph-server-2
+Host ceph-s-3
+  Hostname ceph-s-3
+  User vagrant
+
+Host ceph-s-4
+  Hostname ceph-s-4
+  User vagrant
+
+Host ceph-s-5
+  Hostname ceph-s-5
+  User vagrant
+
+Host ceph-s-6
+  Hostname ceph-s-6
+  User vagrant
+
+Host ceph-a-1
+  Hostname ceph-a-1
   User vagrant

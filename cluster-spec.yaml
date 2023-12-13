@@ -1,0 +1,121 @@
+service_type: host
+addr: 172.22.12.12
+hostname: ceph-s-1
+location:
+  root: default
+  datacenter: DC1
+labels:
+  - osd
+  - mon
+  - mgr
+---
+service_type: host
+addr: 172.22.12.13
+hostname: ceph-s-2
+location:
+  datacenter: DC1
+labels:
+  - osd
+  - mon
+---
+service_type: host
+addr: 172.22.12.14
+hostname: ceph-s-3
+location:
+  datacenter: DC1
+labels:
+  - osd
+  - mds
+  - rgw
+---
+service_type: host
+addr: 172.22.12.15
+hostname: ceph-s-4
+location:
+  root: default
+  datacenter: DC2
+labels:
+  - osd
+  - mon
+  - mgr
+---
+service_type: host
+addr: 172.22.12.16
+hostname: ceph-s-5
+location:
+  datacenter: DC2
+labels:
+  - osd
+  - mon
+---
+service_type: host
+addr: 172.22.12.17
+hostname: ceph-s-6
+location:
+  datacenter: DC2
+labels:
+  - osd
+  - mds
+  - rgw
+---
+service_type: host
+addr: 172.22.12.10
+hostname: ceph-a-1
+labels:
+  - mon
+  - mgmt
+---
+service_type: mon
+placement:
+  label: "mon"
+---
+service_type: mds
+service_id: fs_name
+placement:
+  label: "mds"
+---
+service_type: mgr
+service_name: mgr
+placement:
+  label: "mgr"
+---
+service_type: osd
+service_id: default_drive_group
+service_name: osd.default_drive_group
+placement:
+  label: "osd"
+spec:
+  data_devices:
+    paths:
+      - /dev/vdb
+  db_devices:
+    paths:
+      - /dev/vdc
+---
+service_type: rgw
+service_id: objectgw
+service_name: rgw.objectgw
+placement:
+  count: 2
+  label: "rgw"
+spec:
+  rgw_frontend_port: 8080
+---
+service_id: grafana.srv
+service_type: grafana
+placement: 
+  count: 1
+  label: mgmt
+---
+service_id: alertmanager.srv
+service_type: alertmanager
+placement:
+  count: 1
+  label: mgmt
+---
+service_id: prometheus.srv
+service_type: prometheus
+placement:
+  count: 1
+  label: mgmt
+  

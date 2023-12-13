@@ -5,18 +5,18 @@
 
 # Number of ceph-server nodes. If you change the default number of 3 you
 # need to adjust the ceph-prep/config and ceph-prep/hosts files accordingly.
-N = 3
+N = 6
 
 # The libvirt storage pool to use
 STORAGE_POOL = "default"
 
 # Amount of Memory (RAM) per node. 8192 is recommended, but 3072 works as well.
-RAM_SIZE = 8192
+RAM_SIZE = 4096
 
 # IP prefix and start address for the VMs
-# The ceph-admin node will get IP_PREFIX.IPSTART (default: 172.21.12.10)
-# The ceph-client and ceph-server-x nodes will get subsequent addresses.
-IP_PREFIX = "172.21.12."
+# The ceph-a-1 node will get IP_PREFIX.IPSTART (default: 172.21.12.10)
+# The ceph-c-1 and ceph-s-x nodes will get subsequent addresses.
+IP_PREFIX = "172.22.12."
 IP_START = 10
 
 ### Do not modify the code below unless you are developing
@@ -71,8 +71,8 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder './', '/vagrant', type: 'rsync'
 
   # The Ceph client will be our client machine to mount volumes and interact with the cluster
-  config.vm.define "ceph-client" do |client|
-    client.vm.hostname = "ceph-client"
+  config.vm.define "ceph-c-1" do |client|
+    client.vm.hostname = "ceph-c-1"
     client.vm.network "private_network", ip: IP_PREFIX+"#{IP_START + 1}"
     client.vm.provision "shell", inline: register_script
     client.vm.provision "shell", inline: timezone_script
@@ -87,8 +87,8 @@ Vagrant.configure("2") do |config|
   end
  
   # We need one Ceph admin machine to manage the cluster
-  config.vm.define "ceph-admin" do |admin|
-    admin.vm.hostname = "ceph-admin"
+  config.vm.define "ceph-a-1" do |admin|
+    admin.vm.hostname = "ceph-a-1"
     admin.vm.network "private_network", ip: IP_PREFIX+"#{IP_START}"
     admin.vm.provision "shell", inline: register_script
     admin.vm.provision "shell", inline: timezone_script
@@ -104,13 +104,13 @@ Vagrant.configure("2") do |config|
  
   # We provision three nodes to be Ceph servers
   (1..N).each do |i|
-    config.vm.define "ceph-server-#{i}" do |server|
-      server.vm.hostname = "ceph-server-#{i}"
+    config.vm.define "ceph-s-#{i}" do |server|
+      server.vm.hostname = "ceph-s-#{i}"
       server.vm.network "private_network", ip: IP_PREFIX+"#{IP_START+i+1}"
       # Attach disks for Ceph OSDs
       server.vm.provider "libvirt" do |libvirt|
-        # 1 small disk
-        num = 1
+        # 2 small disks
+        num = 2
         (1..num).each do |disk|
           libvirt.storage :file, :size => '5G', :cache => 'none'
         end
