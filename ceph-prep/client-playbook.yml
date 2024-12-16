@@ -24,8 +24,8 @@
 
     - name: Download ceph-tools repository
       ansible.builtin.uri:
-        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-7-rhel-9.repo
-        dest: /etc/yum.repos.d/ibm-storage-ceph-7-rhel-9.repo
+        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-8-rhel-9.repo
+        dest: /etc/yum.repos.d/ibm-storage-ceph-8-rhel-9.repo
 
     - name: Enable select repositories
       community.general.rhsm_repository:
