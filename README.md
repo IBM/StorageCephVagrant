@@ -4,7 +4,7 @@ Vagrant / Ansible IBM Storage Ceph Deployment
 ## Scope
 
 
-This is an opinionated automated deployment of a IBM Storage Ceph 7.x cluster
+This is an opinionated automated deployment of a IBM Storage Ceph 8.x cluster
 installation based on RHEL9 up to the point where you run the preflight Ansible playbook.
 
 ![IBM Storage Ceph Screenshot](./IBM_Storage_Ceph.png "IBM Storage Ceph Screenshot")
@@ -54,6 +54,9 @@ Tested with
 - Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.1.0
 - Fedora 38: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.7.0
 - Fedora 39: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.0.0
+- Fedora 40: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.11.0
+
+On Fedora 40, it is highly recommened to manually apply [this patch](https://github.com/net-ssh/net-ssh/commit/efd0ebe882fce04952dcf1dbe2ba5618172f2172).
 
 You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
