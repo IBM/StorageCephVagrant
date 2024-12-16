@@ -34,11 +34,11 @@ their respective package manager commands.
 - QEM/KVM/libvirt: `sudo dnf -y install qemu libvirt libvirt-devel ruby-devel gcc`
 - [Vagrant libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt) Provider:
 For Fedora use `sudo dnf -y install vagrant-libvirt`. Check for a package available
-for your Linux distribution before trying to install with `vagrant plugin install vagrant-libvirt`. 
+for your Linux distribution before trying to install with `vagrant plugin install vagrant-libvirt`.
 - [Vagrant Hostmanager](https://github.com/devopsgroup-io/vagrant-hostmanager)
 plugin: For Fedora use `sudo dnf -y install vagrant-hostmanager`.
 Check for a package available for your Linux distribution before trying to install
-with `vagrant plugin install vagrant-hostmanager`. 
+with `vagrant plugin install vagrant-hostmanager`.
 - Ansible: `sudo dnf -y install ansible`.
 
 The host needs internet connectivity to download the required packages and
@@ -343,7 +343,7 @@ example:
 
 ## License
 
-All source files must include a Copyright and License header. The SPDX license header is 
+All source files must include a Copyright and License header. The SPDX license header is
 preferred because it can be easily scanned.
 
 If you would like to see the detailed LICENSE click [here](LICENSE).
