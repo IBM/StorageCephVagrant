@@ -6,6 +6,6 @@ Host ceph-server-2
   Hostname ceph-server-2
   User vagrant
 
-Host ceph-server-2
-  Hostname ceph-server-2
+Host ceph-server-3
+  Hostname ceph-server-3
   User vagrant
