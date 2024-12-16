@@ -1,28 +1,24 @@
-Vagrant / Ansible IBM Storage Ceph Deployment
-=============================================
+# Vagrant / Ansible IBM Storage Ceph Deployment
 
 ## Scope
-
 
 This is an opinionated automated deployment of a IBM Storage Ceph 8.x cluster
 installation based on RHEL9 up to the point where you run the preflight Ansible playbook.
 
 ![IBM Storage Ceph Screenshot](./IBM_Storage_Ceph.png "IBM Storage Ceph Screenshot")
 
-
 ## Acknowledgments
-
 
 The code to facilitate automated subscription-manager registration was derived from the
 [https://github.com/agarthetiger/vagrant-rhel8](https://github.com/agarthetiger/vagrant-rhel8)
 project.
 
 Copyright notice:
-```
+
+```text
 # Copyright contributors to the rhcs5-vagrant project.
 # Based on vagrant-rhel8 code - Copyright (c) 2019 Andrew Garner
 ```
-
 
 ## Prerequisites
 
@@ -62,7 +58,7 @@ You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
 Finally you need to create a private/public key pair in the `ceph-prep` directory:
 
-```
+```bash
 cd ceph-prep
 # use empty password when prompted
 ssh-keygen -t rsa -f ./id_rsa
@@ -76,7 +72,8 @@ at the section marked with `Some parameters that can be adjusted`.
 
 Bring up the Cluster by setting the environment variables with your Red Hat
 credentials then start the vagrant/ansible driven deployment:
-```
+
+```bash
 export RH_SUBSCRIPTION_MANAGER_USER=<your Red Hat username>
 export RH_SUBSCRIPTION_MANAGER_PW=<your Red Hat password>
 # For debugging: vagrant up --no-parallel --no-destroy-on-error
@@ -88,7 +85,7 @@ The vagrant deployment will automatically subscribe the machines at Red Hat.
 To finalize the installation, ssh into the `ceph-admin` node and execute the
 preflight Ansible playbook:
 
-```
+```bash
 vagrant ssh ceph-admin
 cd /usr/share/cephadm-ansible/
 ansible-playbook -i inventory/production/hosts cephadm-preflight.yml --extra-vars "ceph_origin=ibm"
@@ -97,14 +94,14 @@ ansible-playbook -i inventory/production/hosts cephadm-preflight.yml --extra-var
 For the next step you need to set the environment variables again on the
 ceph-admin node:
 
-```
+```bash
 export IBM_CR_USERNAME=<your IBM Container Registry user name>
 export IBM_CR_PASSWORD=<your IBM Container Registry Entitlement key>
 ```
 
 Then you can continue with bootstrapping the cluster:
 
-```
+```bash
 sudo cephadm bootstrap --cluster-network 172.21.12.0/24 --mon-ip 172.21.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-1
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-2
@@ -113,7 +110,6 @@ ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-3
 
 Note down the admin password that the `cephadm bootstrap` command printed. You
 will need it for logging into the console the first time.
-
 
 ## Configuration
 
@@ -143,7 +139,7 @@ to configure RBD access, CephFS and RGW S3 and Swift access.
 
 ### Configure Block (RBD) access
 
-```
+```bash
 vagrant ssh ceph-admin
 # Create RBD pool
 sudo ceph osd pool create rbd 64
@@ -159,7 +155,7 @@ sudo rbd ls
 
 ### Configure File (CephFS) access
 
-```
+```bash
 # Create CephFS
 sudo ceph fs volume create fs_name --placement=ceph-server-1,ceph-server-2
 sudo ceph fs volume ls
@@ -183,7 +179,7 @@ sudo ceph auth get client.0 -o /etc/ceph/ceph.client.0.keyring
 
 ### Configure Object (RGW) access
 
-```
+```bash
 # Create RGW
 
 # Note that this is due to the low number of OSDs
@@ -204,14 +200,13 @@ sudo radosgw-admin subuser create --uid='user1' --subuser='user1:swift' --secret
 sudo radosgw-admin user info --uid='user1'
 ```
 
-
 ## Usage
 
 Now use the created resources on the `ceph-client` node.
 
 ### RBD volume access
 
-```
+```bash
 vagrant ssh ceph-client
 # Add the configuration according to the admin node equivalent
 sudo vi /etc/ceph/ceph.conf
@@ -230,7 +225,7 @@ echo "hello world" > /mnt/rbd/hello.txt
 
 ### CephFS file access
 
-```
+```bash
 # Add the 0 keyring file according to the admin node equivalent
 sudo vi /etc/ceph/ceph.client.0.keyring
 sudo mkdir /mnt/cephfs
@@ -242,7 +237,7 @@ echo "hello world" > /mnt/cephfs/hello.txt
 
 ### RGW OpenStack Swift object access
 
-```
+```bash
 sudo dnf -y install python3-pip
 pip3 install --user python-swiftclient
 sudo rados --id harald lspools
@@ -260,7 +255,7 @@ using the Swift protocol.
 When asked for the access key, put in `S3user1`, for the secret key use
 `S3user1key`.
 
-```
+```bash
 pip3 install --user awscli
 echo "Put in S3user1 as access key and S3user1key as secret key"
 aws configure --profile ceph
@@ -286,7 +281,7 @@ Object Gateway Daemons.
 After adding all nodes, a count of 5 mons is set while only four nodes are
 available, thus only four mons will be running:
 
-```
+```bash
 vagrant ssh ceph-admin
 $ sudo ceph orch ls
 NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
@@ -296,7 +291,7 @@ mon                                 4/5  2m ago     5w   count:5
 
 To get a better balanced state, reduce the number of mons to 3:
 
-```
+```bash
 cat <<EOF>3-mons.yaml
 service_type: mon
 service_name: mon
@@ -308,14 +303,13 @@ sudo ceph orch apply -i 3-mons.yaml
 
 This will result in:
 
-```
+```bash
 $ sudo ceph orch ls
 NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
 ...
 mon                                 3/3  65s ago    6s   count:3
 ...
 ```
-
 
 ## Shutting down and restarting the VMs
 
