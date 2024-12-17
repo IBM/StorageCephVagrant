@@ -256,9 +256,17 @@ When asked for the access key, put in `S3user1`, for the secret key use
 `S3user1key`.
 
 ```bash
-pip3 install --user awscli
-echo "Put in S3user1 as access key and S3user1key as secret key"
-aws configure --profile ceph
+curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+sudo dnf -y install unzip
+unzip awscliv2.zip 2>&1 >/dev/null
+cd aws
+sudo ./install
+cd ..
+rm -rf awscliv2.zip aws
+aws configure set aws_access_key_id S3user1 --profile ceph
+aws configure set aws_secret_access_key S3user1key --profile ceph
+# The following speeds up AWS CLI requests significantly
+export AWS_EC2_METADATA_DISABLED=true
 aws --profile ceph --endpoint http://ceph-server-2 s3 ls
 aws --profile ceph --endpoint http://172.21.12.13 s3 ls s3://container-1
 ```
