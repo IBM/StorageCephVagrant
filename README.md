@@ -263,6 +263,8 @@ cd ..
 rm -rf awscliv2.zip aws
 aws configure set aws_access_key_id S3user1 --profile ceph
 aws configure set aws_secret_access_key S3user1key --profile ceph
+# Set region, otherwise bucket creation will fail
+aws configure set region us-east-1 --profile ceph
 # The following speeds up AWS CLI requests significantly
 export AWS_EC2_METADATA_DISABLED=true
 aws --profile ceph --endpoint http://ceph-server-2 s3 ls
