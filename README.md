@@ -52,7 +52,7 @@ Tested with
 - Fedora 39: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.0.0
 - Fedora 40: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.11.0
 
-On Fedora 40, it is highly recommened to manually apply [this patch](https://github.com/net-ssh/net-ssh/commit/efd0ebe882fce04952dcf1dbe2ba5618172f2172).
+On Fedora 40, it is highly recommended to manually apply [this patch](https://github.com/net-ssh/net-ssh/commit/efd0ebe882fce04952dcf1dbe2ba5618172f2172).
 
 You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
