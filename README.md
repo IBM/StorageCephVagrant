@@ -252,8 +252,6 @@ swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' uplo
 
 Here we are actually testing S3 client access to the same data that was stored
 using the Swift protocol.
-When asked for the access key, put in `S3user1`, for the secret key use
-`S3user1key`.
 
 ```bash
 curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
