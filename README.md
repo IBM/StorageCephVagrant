@@ -50,9 +50,8 @@ Tested with
 - Fedora 37: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.1.0
 - Fedora 38: Vagrant 2.2.19, vagrant-libvirt 0.7.0  and Ansible 7.7.0
 - Fedora 39: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.0.0
-- Fedora 40: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.11.0
-
-On Fedora 40, it is highly recommended to manually apply [this patch](https://github.com/net-ssh/net-ssh/commit/efd0ebe882fce04952dcf1dbe2ba5618172f2172).
+- Fedora 40: Vagrant 2.3.4,  vagrant-libvirt 0.11.2 and Ansible 9.11.0. On Fedora 40, it is highly recommended to manually apply [this patch](https://github.com/net-ssh/net-ssh/commit/efd0ebe882fce04952dcf1dbe2ba5618172f2172) to fix errors causing `vagrant halt` and `vagrant reload` to fail.
+- Fedora 41: Vagrant 2.3.4, vagrant-libvirt 0.11.2 and Ansible 9.13.0.
 
 You need a subscription for RHEL and a pull secret for IBM Storage Ceph.
 
@@ -74,8 +73,8 @@ Bring up the Cluster by setting the environment variables with your Red Hat
 credentials then start the vagrant/ansible driven deployment:
 
 ```bash
-export RH_SUBSCRIPTION_MANAGER_USER=<your Red Hat username>
-export RH_SUBSCRIPTION_MANAGER_PW=<your Red Hat password>
+export RH_SUBSCRIPTION_MANAGER_USER='<your Red Hat username>'
+export RH_SUBSCRIPTION_MANAGER_PW='<your Red Hat password>'
 # For debugging: vagrant up --no-parallel --no-destroy-on-error
 vagrant up --no-parallel
 ```
@@ -95,8 +94,8 @@ For the next step you need to set the environment variables again on the
 ceph-admin node:
 
 ```bash
-export IBM_CR_USERNAME=<your IBM Container Registry user name>
-export IBM_CR_PASSWORD=<your IBM Container Registry Entitlement key>
+export IBM_CR_USERNAME='<your IBM Container Registry user name>'
+export IBM_CR_PASSWORD='<your IBM Container Registry Entitlement key>'
 ```
 
 Then you can continue with bootstrapping the cluster:
