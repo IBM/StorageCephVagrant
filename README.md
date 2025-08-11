@@ -119,7 +119,7 @@ You can now complete the installation by logging into the
 is the one you noted above as `cephadm bootstrap` output.
 - activate telemetry module. See the warning on top of the screen after logging
 in.
-- add nodes using Cluster->Hosts->Create. Use ceph-server-1 with IP
+- add nodes using Cluster->Hosts->Add. Use ceph-server-1 with IP
 172.21.12.12, ceph-server-2 with IP 172.21.12.13, ceph-server-3
 with IP 172.21.12.14.
 - add OSDs. Please wait until all ceph-server nodes are active, this might take

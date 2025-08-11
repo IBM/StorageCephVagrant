@@ -9,7 +9,7 @@
     prereqs_path: "/vagrant/ceph-prep"
   tasks:
     - name: Update all packages
-      ansible.builtin.dnf:      
+      ansible.builtin.dnf:
         name: "*"
         state: latest
 
