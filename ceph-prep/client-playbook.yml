@@ -7,15 +7,38 @@
   become: true
   vars:
     prereqs_path: "/vagrant/ceph-prep"
+    perform_upgrades: true
   tasks:
     - name: Update all packages
       ansible.builtin.dnf:
         name: "*"
         state: latest
+      when: perform_upgrades == true
+
+    - name: Check if we need a reboot
+      command: needs-restarting -r
+      register: result
+      ignore_errors: yes
+      when: perform_upgrades == true
+
+    - name: Display result of reboot check
+      debug:
+        var: result.rc
+      when: perform_upgrades == true
+
+    - name: Reboot Server if necessary
+      reboot:
+        reboot_timeout: 3600
+      when: result.rc == 1 and perform_upgrades == true
+
+    - name: Remove old kernels
+      command: dnf remove -y --oldinstallonly
+      when: perform_upgrades == true
 
     - name: Autoremove unneeded packages installed as dependencies
       ansible.builtin.dnf:
         autoremove: yes
+      when: perform_upgrades == true
 
     - name: Disable all RHSM repositories
       community.general.rhsm_repository:
