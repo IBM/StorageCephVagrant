@@ -89,7 +89,10 @@ preflight Ansible playbook:
 ```bash
 vagrant ssh ceph-admin
 cd /usr/share/cephadm-ansible/
-ansible-playbook -i inventory/production/hosts cephadm-preflight.yml --extra-vars "ceph_origin=ibm"
+ansible-playbook -i inventory/production/hosts \
+  cephadm-preflight.yml \
+  --extra-vars "ceph_origin=ibm" \
+  --extra-vars "ceph_ibm_version=9"
 ```
 
 For the next step you need to set the environment variables again on the
@@ -103,7 +106,9 @@ export IBM_CR_PASSWORD='<your IBM Container Registry Entitlement key>'
 Then you can continue with bootstrapping the cluster:
 
 ```bash
-sudo cephadm bootstrap --cluster-network 172.21.12.0/24 --mon-ip 172.21.12.10 --registry-url cp.icr.io/cp --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD
+sudo cephadm bootstrap --cluster-network 172.21.12.0/24 --mon-ip 172.21.12.10 \
+  --registry-url cp.icr.io/cp \
+  --registry-username $IBM_CR_USERNAME  --registry-password $IBM_CR_PASSWORD
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-1
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-2
 ssh-copy-id -f -i /etc/ceph/ceph.pub root@ceph-server-3
@@ -118,22 +123,25 @@ You can now complete the installation by logging into the
 [IBM Storage Ceph GUI](https://172.21.12.10:8443) to
 
 - change the password. You will be prompted automatically, the initial password
-is the one you noted above as `cephadm bootstrap` output.
+  is the one you noted above as `cephadm bootstrap` output.
 - activate telemetry module. See the warning on top of the screen after logging
-in.
-- add nodes using Cluster->Hosts->Add. Use ceph-server-1 with IP
-172.21.12.12, ceph-server-2 with IP 172.21.12.13, ceph-server-3
-with IP 172.21.12.14.
-- add OSDs. Please wait until all ceph-server nodes are active, this might take
-up to 10 minutes. When active, Cluster->Hosts shows mon service instances on
-all nodes. Add OSDs via Cluster->OSDs->Create.
+  in.
+- expand your cluster. Click on the "Expand Cluster" button, then add nodes
+  using the "Add" button. Use `ceph-server-1` with Network address 172.21.12.12,
+  `ceph-server-2` with 172.21.12.13, `ceph-server-3` with 172.21.12.14.
+  Wait/click the refresh icon until all 3 nodes appear. Then click "Next".
+- create OSDs. Note that it can take up to 10 minutes until the disks are
+  discovered and the Deployment Options can be selected. Click Use the default
+  Cost/Capacity-Optimized setting, click "Next".
+- create Services. Use the default settings, click "Next".
+- review. Click "Expand Cluster" to finish.
+
+The OSDs might not get created though. If that is the case, navigate to
+Cluster->OSDs and re-do the creation by clicking the "Create" button and
+accepting the default choices.
 
 Most of the following is taken from the course [Hands-on with Red Hat Ceph Storage 5](https://training-lms.redhat.com/sso/saml/auth/rhopen?RelayState=deeplinkoffering%3D44428318)
 with some improvements applied.
-
-Note: When creating an RBD image, ensure that you do not have the `Exclusive Lock`
-option set, otherwise there might be access issues mapping the RBD volume on the
-client.
 
 The following sections provide additional commands (on the `ceph-admin` node)
 to configure RBD access, CephFS and RGW S3 and Swift access.
@@ -151,6 +159,10 @@ sudo ceph auth caps client.harald mon 'allow r' osd 'allow rwx'
 sudo ceph auth list
 # Create RBD image
 sudo rbd create rbd/test --size=128M
+# When creating an RBD image, ensure that you do not have the `Exclusive Lock`
+# option set, otherwise there might be access issues mapping the RBD volume on
+# the client.
+sudo rbd feature disable rbd/test exclusive-lock
 sudo rbd ls
 ```
 
@@ -190,14 +202,18 @@ sudo ceph auth get client.0 -o /etc/ceph/ceph.client.0.keyring
 sudo ceph config set global mon_max_pg_per_osd 512
 sudo radosgw-admin realm create --rgw-realm=test_realm --default
 sudo radosgw-admin zonegroup create --rgw-zonegroup=default --master --default
-sudo radosgw-admin zone create --rgw-zonegroup=default --rgw-zone=test_zone --master --default
+sudo radosgw-admin zone create --rgw-zonegroup=default --rgw-zone=test_zone \
+  --master --default
 sudo radosgw-admin period update --rgw-realm=test_realm --commit
-sudo ceph orch apply rgw test --realm=test_realm --zone=test_zone --placement="2 ceph-server-2 ceph-server-3"
+sudo ceph orch apply rgw test --realm=test_realm --zone=test_zone \
+  --placement="2 ceph-server-2 ceph-server-3"
 sudo ceph orch ls
 sudo ceph orch ps
 sudo ceph -s
-sudo radosgw-admin user create --uid='user1' --display-name='First User' --access-key='S3user1' --secret-key='S3user1key'
-sudo radosgw-admin subuser create --uid='user1' --subuser='user1:swift' --secret-key='Swiftuser1key' --access=full
+sudo radosgw-admin user create --uid='user1' --display-name='First User' \
+  --access-key='S3user1' --secret-key='S3user1key'
+sudo radosgw-admin subuser create --uid='user1' --subuser='user1:swift' \
+  --secret-key='Swiftuser1key' --access=full
 sudo radosgw-admin user info --uid='user1'
 ```
 
@@ -246,7 +262,8 @@ swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' post container-1
 swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' list
 base64 /dev/urandom | head -c 10000000 >dummy_file1.txt
-swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' upload container-1 dummy_file1.txt 
+swift -A http://ceph-server-2:80/auth/1.0 -U user1:swift -K 'Swiftuser1key' upload \
+  container-1 dummy_file1.txt
 ```
 
 ### RGW S3 object access
@@ -292,10 +309,9 @@ available, thus only four mons will be running:
 
 ```bash
 vagrant ssh ceph-admin
-$ sudo ceph orch ls
+$ sudo ceph orch ls | grep "NAME\|mon"
 NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
-...
-mon                                 4/5  2m ago     5w   count:5
+mon                                 4/5  7m ago     40m  count:5
 ```
 
 To get a better balanced state, reduce the number of mons to 3:
@@ -313,11 +329,9 @@ sudo ceph orch apply -i 3-mons.yaml
 This will result in:
 
 ```bash
-$ sudo ceph orch ls
+$ sudo ceph orch ls | grep "NAME\|mon"
 NAME               PORTS        RUNNING  REFRESHED  AGE  PLACEMENT
-...
-mon                                 3/3  65s ago    6s   count:3
-...
+mon                                 3/3  9m ago     18s  count:3
 ```
 
 ## Shutting down and restarting the VMs

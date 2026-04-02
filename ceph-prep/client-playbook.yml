@@ -8,7 +8,18 @@
   vars:
     prereqs_path: "/vagrant/ceph-prep"
     perform_upgrades: true
+    # Issue with some TLS connection within VM -> reduce MTU
+    # Set tls_workaround to true if you get:
+    # TASK [Download ceph-tools repository] ******************************************
+    # fatal: [ceph-client]: FAILED! => {"changed": false, "elapsed": 30, "msg": "Status code was -1 and not [200]: Request failed: <urlopen error _ssl.c:1130: The handshake operation timed out>", "redirected": false, "status": -1, "url": "https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-9-rhel-9.repo"}
+    tls_workaround: false
   tasks:
+    - name: Reduce MTU
+      shell : |
+        nmcli con mod eth0 mtu 536
+        nmcli con up eth0
+      when: tls_workaround == true
+
     - name: Update all packages
       ansible.builtin.dnf:
         name: "*"
@@ -45,11 +56,6 @@
         name: '*'
         state: disabled
 
-    - name: Download ceph-tools repository
-      ansible.builtin.uri:
-        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-8-rhel-9.repo
-        dest: /etc/yum.repos.d/ibm-storage-ceph-8-rhel-9.repo
-
     - name: Enable select repositories
       community.general.rhsm_repository:
         name:
@@ -57,7 +63,13 @@
           - rhel-9-for-x86_64-appstream-rpms
         state: enabled
 
+    - name: Download ceph-tools repository
+      ansible.builtin.uri:
+        url: https://public.dhe.ibm.com/ibmdl/export/pub/storage/ceph/ibm-storage-ceph-9-rhel-9.repo
+        dest: /etc/yum.repos.d/ibm-storage-ceph-9-rhel-9.repo
+
     - name: Install ceph-common
-      ansible.builtin.dnf:      
+      ansible.builtin.dnf:
         name: "ceph-common"
         state: latest
+        update_cache: true
