@@ -2,7 +2,7 @@
 
 ## Scope
 
-This is an opinionated automated deployment of a IBM Storage Ceph 8.x cluster
+This is an opinionated automated deployment of a IBM Storage Ceph 9.x cluster
 installation based on RHEL9 up to the point where you run the preflight Ansible playbook.
 
 ![IBM Storage Ceph Screenshot](./IBM_Storage_Ceph.png "IBM Storage Ceph Screenshot")
